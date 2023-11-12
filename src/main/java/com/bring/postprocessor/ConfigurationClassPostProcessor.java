@@ -30,14 +30,9 @@ public class ConfigurationClassPostProcessor implements BeanPostProcessor {
 
       private void loadBeanDefinitionsForBeanMethod(DefaultBeanFactory defaultBeanFactory, String beanName, 
                                                     Method method) {
-        List<String> dependencies = Arrays.stream(method.getParameters())
-                .map(Parameter::getName)
-                .toList();
-        
         BeanDefinition beanDefinition = BeanDefinition.builder()
             .beanClass(method.getReturnType())
             .beanType(BeanTypeEnum.findBeanType(method))
-            .dependencies(dependencies)
             .isSingleton(true)
             .method(method)
             .factoryMethodName(method.getName())

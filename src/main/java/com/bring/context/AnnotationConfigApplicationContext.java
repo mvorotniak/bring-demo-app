@@ -25,9 +25,10 @@ public class AnnotationConfigApplicationContext implements BringApplicationConte
             .beanClass(clazz)
             .beanType(BeanTypeEnum.findBeanType(clazz))
             .isSingleton(true)
+            .factoryBeanName(clazz.getSimpleName())
             .build();
         
-        defaultBeanFactory.registerBeanDefinition(beanDefinition);
+        this.defaultBeanFactory.registerBeanDefinition(beanDefinition);
     }
 
     @Override
@@ -47,11 +48,11 @@ public class AnnotationConfigApplicationContext implements BringApplicationConte
     }
 
     private void invokeBeanFactoryPostProcessors() {
-        processors.forEach(processor -> processor.postProcessBeanFactory(defaultBeanFactory));
+        this.processors.forEach(processor -> processor.postProcessBeanFactory(this.defaultBeanFactory));
     }
 
     private void instantiateBeans() {
-        defaultBeanFactory.instantiateSingletons();
+        this.defaultBeanFactory.instantiateSingletons();
     }
     
 }

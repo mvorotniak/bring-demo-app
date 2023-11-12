@@ -12,7 +12,7 @@ public class BringApplication {
     }
     
     public BringApplicationContext run() {
-        BringApplicationContext context = createAnnotationConfigApplicationContext(primarySource);
+        BringApplicationContext context = this.createAnnotationConfigApplicationContext(this.primarySource);
         context.refresh();
         
         return context;

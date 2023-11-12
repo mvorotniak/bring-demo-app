@@ -53,11 +53,11 @@ public class DefaultBeanFactory {
     private String generateBeanName(BeanDefinition beanDefinition) {
         return beanDefinition.getBeanType() == BeanTypeEnum.CONFIGURATION_BEAN
           ? beanDefinition.getFactoryMethodName()
-          : beanDefinition.getBeanClass().getSimpleName();
+          : beanDefinition.getFactoryBeanName();
     }
 
     public void instantiateSingletons() {
-        beanDefinitionMap.entrySet()
+        this.beanDefinitionMap.entrySet()
           .stream()
           .filter(entry -> entry.getValue().isSingleton())
           .sorted(Comparator.comparing(entry -> entry.getValue().getBeanType().getOrder()))
@@ -69,12 +69,10 @@ public class DefaultBeanFactory {
             return this.singletonObjects.get(beanName);
         }
         
-        InstantiationStrategy strategy = this.getInstantiationStrategy();
-        
         Object obj;
         if (Objects.nonNull(beanDefinition.getMethod())) {
             Object configObj = this.singletonObjects.get(beanDefinition.getFactoryBeanName());
-            List<String> methodParamNames = Arrays.stream(info.lookupParameterNames(beanDefinition.getMethod()))
+            List<String> methodParamNames = Arrays.stream(this.info.lookupParameterNames(beanDefinition.getMethod()))
               .toList();
             
             List<Object> methodObjs = new ArrayList<>();
@@ -92,12 +90,13 @@ public class DefaultBeanFactory {
                 }
             });
             
-            obj = strategy.instantiate(beanDefinition, configObj, beanDefinition.getMethod(), methodObjs.toArray());
+            obj = this.instantiationStrategy.instantiate(beanDefinition, configObj, beanDefinition.getMethod(), 
+                    methodObjs.toArray());
         } else {
-            obj = strategy.instantiate(beanDefinition);
+            obj = this.instantiationStrategy.instantiate(beanDefinition);
         }
 
-        singletonObjects.put(beanName, obj);
+        this.singletonObjects.put(beanName, obj);
         
         return obj;
     }
